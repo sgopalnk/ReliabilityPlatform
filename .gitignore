@@ -1,0 +1,35 @@
+# Python virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# IDE
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Pytest cache
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Generated output
+outputs/
+reports/
+
+# VS Code
+.vscode/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Test artifacts
+*.log
+
+# OS files
+Thumbs.db

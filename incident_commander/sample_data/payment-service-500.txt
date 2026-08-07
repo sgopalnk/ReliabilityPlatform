@@ -1,0 +1,7 @@
+Payment service is returning HTTP 500 errors.
+CPU usage increased from 35% to 95%.
+Pods restarted three times.
+Deployment completed 10 minutes before the incident.
+Approximately 60% of requests are failing.
+Customer payments cannot be completed.
+The issue started at approximately 10:42 UTC.

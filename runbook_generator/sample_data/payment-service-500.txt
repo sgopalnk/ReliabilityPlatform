@@ -1,0 +1,4 @@
+Payment service is returning HTTP 500 errors.
+CPU utilization increased from 35% to 95%.
+Pods restarted three times.
+Deployment completed 10 minutes before the incident.
