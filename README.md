@@ -4,13 +4,13 @@ ReliabilityPlatform is an AI-powered Reliability Engineering platform designed t
 
 The platform provides a collection of independent yet integrated AI-powered modules that assist with production incident response, operational documentation, and future reliability engineering workflows.
 
-The long-term vision is to build a comprehensive Reliability Engineering platform that enables engineers to investigate incidents, generate operational knowledge, improve system reliability, and automate repetitive operational tasks using Large Language Models (LLMs).
+The long-term vision is to build a comprehensive Reliability Engineering platform that enables engineers to detect, investigate, resolve, and learn from production incidents while improving overall system reliability through AI-powered assistance and intelligent automation.
 
 ---
 
-## Current Features
+# Current Features
 
-### AI Incident Commander
+## Incident Commander
 
 Analyzes production incidents using an LLM and produces structured incident analysis including:
 
@@ -22,15 +22,21 @@ Analyzes production incidents using an LLM and produces structured incident anal
 
 ---
 
-### AI Runbook Generator
+## Runbook Generator
 
 Generates production-ready operational runbooks from incident descriptions, enabling engineering teams to create consistent operational documentation quickly.
 
 ---
 
-## Platform Architecture
+## ChatOps Assistant *(Under Development)*
 
-```
+A conversational AI assistant that helps operations engineers investigate incidents, understand system behavior, answer operational questions, and interact with ReliabilityPlatform modules through natural language.
+
+---
+
+# Platform Architecture
+
+```text
 ReliabilityPlatform/
 │
 ├── core/
@@ -38,9 +44,12 @@ ReliabilityPlatform/
 │   ├── llm_client.py
 │   └── logger.py
 │
-├── incident_commander/
+├── operations_center/
+│   └── chatops_assistant/
 │
-├── runbook_generator/
+├── incident_management/
+│   ├── incident_commander/
+│   └── runbook_generator/
 │
 ├── docs/
 │
@@ -51,11 +60,12 @@ ReliabilityPlatform/
 
 ---
 
-## Design Principles
+# Design Principles
 
 ReliabilityPlatform is built around a few core engineering principles:
 
 - Modular architecture
+- Capability-based platform design
 - Shared platform components
 - Independent, reusable modules
 - Consistent project structure
@@ -66,7 +76,7 @@ Each module can run independently while sharing common platform services provide
 
 ---
 
-## Technology Stack
+# Technology Stack
 
 - Python 3
 - OpenAI API
@@ -75,11 +85,9 @@ Each module can run independently while sharing common platform services provide
 
 ---
 
-## Repository Structure
+# Repository Structure
 
-```
-core/
-```
+## core/
 
 Shared platform services used by all modules.
 
@@ -89,43 +97,58 @@ Current shared components:
 - LLM Client
 - Logging
 
-```
-incident_commander/
-```
+---
 
-AI-powered incident analysis.
+## operations_center/
 
-```
-runbook_generator/
-```
+Operational interfaces that help engineers interact with the ReliabilityPlatform.
 
-AI-powered operational runbook generation.
+Current module:
+
+- AI ChatOps Assistant *(Under Development)*
 
 ---
 
-## Getting Started
+## incident_management/
 
-### Clone the repository
+AI-powered modules that assist engineers throughout the production incident lifecycle.
+
+Current modules:
+
+- AI Incident Commander
+- AI Runbook Generator
+
+---
+
+## docs/
+
+Project documentation including coding standards, release process, and future architecture documentation.
+
+---
+
+# Getting Started
+
+## Clone the repository
 
 ```bash
-git clone git@github.com:sg/ReliabilityPlatform.git
+git clone git@github.com:sgopalnk/ReliabilityPlatform.git
 cd ReliabilityPlatform
 ```
 
-### Create a virtual environment
+## Create a virtual environment
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install dependencies
+## Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure environment variables
+## Configure environment variables
 
 Create a `.env` file in the project root.
 
@@ -138,40 +161,71 @@ LLM_MODEL=gpt-5-mini
 
 ---
 
-## Running the Applications
+# Running the Applications
 
-### AI Incident Commander
+## AI Incident Commander
 
 ```bash
-python -m incident_commander.app incident_commander/sample_data/payment-service-500.txt
+python -m incident_management.incident_commander.app \
+incident_management/incident_commander/sample_data/payment-service-500.txt
 ```
 
 ---
 
-### AI Runbook Generator
+## AI Runbook Generator
 
 ```bash
-python -m runbook_generator.app runbook_generator/sample_data/payment-service-500.txt
+python -m incident_management.runbook_generator.app \
+incident_management/runbook_generator/sample_data/payment-service-500.txt
 ```
 
 ---
 
-## Current Release
+# Roadmap
 
-**v0.1.0 — Foundation**
+## Operations Center
 
-This release establishes the foundation of the ReliabilityPlatform, including:
+- AI ChatOps Assistant *(In Progress)*
+
+## Incident Management
+
+- AI Incident Commander ✅
+- AI Runbook Generator ✅
+- AI Multi-Agent Troubleshooter
+- AI Postmortem Generator
+
+## Reliability Engineering
+
+- Reliability Analytics
+
+## Future Platform Capabilities
+
+- Observability
+- Automation
+- Knowledge Management
+- Administration
+
+---
+
+# Current Release
+
+**v0.2.0 — Capability-Based Platform Architecture**
+
+This release establishes the platform architecture for ReliabilityPlatform, including:
 
 - Shared Core SDK
+- Operations Center capability
+- Incident Management capability
 - AI Incident Commander
 - AI Runbook Generator
+- AI ChatOps Assistant scaffold
 - Common LLM client
 - Shared logging infrastructure
-- Unified project architecture
+- Capability-based platform architecture
 
 ---
 
-## License
+# License
 
 This project is licensed under the terms described in the LICENSE file.
 

@@ -1,68 +1,77 @@
 """
 ChatOps Assistant
 
-Provides an interactive command-line interface for
-ReliabilityPlatform modules.
+Answers Reliability Engineering questions using the configured
+Large Language Model (LLM) and converts the response
+into a structured ChatResponse object.
 """
 
+import json
+from json import JSONDecodeError
+
+import openai
+from pydantic import ValidationError
+
+from core.llm_client import LLMClient
 from core.logger import get_logger
+
+from operations_center.chatops_assistant.src.exceptions import ChatOpsAssistantError
+from operations_center.chatops_assistant.src.models import ChatResponse
+from operations_center.chatops_assistant.src.prompt_builder import PromptBuilder
 
 logger = get_logger("chatops_assistant")
 
 
 class ChatOpsAssistant:
     """
-    Interactive command-line assistant for ReliabilityPlatform.
+    Answers Reliability Engineering questions using an LLM.
     """
 
-    def start(self):
+    def __init__(self):
+        # Create a reusable LLM client.
+        self.llm_client = LLMClient()
+
+    def answer(self, question: str) -> ChatResponse:
         """
-        Start the interactive ChatOps session.
+        Answer a Reliability Engineering question and return
+        a structured ChatResponse object.
         """
+        logger.info("Starting ChatOps request.")
 
-        logger.info("Starting ChatOps Assistant.")
+        # 1. Build the prompt.
+        prompt = PromptBuilder.build(question)
 
-        print("\n============================================================")
-        print("          ReliabilityPlatform ChatOps Assistant")
-        print("============================================================")
-        print("\nType 'help' to see available commands.\n")
+        try:
+            logger.info("Sending question to LLM.")
 
-        while True:
+            # 2. Send the prompt to the configured LLM.
+            response_text = self.llm_client.generate(prompt)
 
-            command = input("chatops> ").strip().lower()
+            # 3. Convert JSON text to Python dictionary.
+            response_json = json.loads(response_text)
 
-            if command == "help":
-                self.show_help()
+            # 4. Convert dictionary to ChatResponse object.
+            response = ChatResponse(**response_json)
 
-            elif command == "clear":
-                self.clear_screen()
+            logger.info("ChatOps request completed successfully.")
 
-            elif command == "exit":
-                logger.info("ChatOps Assistant terminated.")
-                print("Goodbye!")
-                break
+            # 5. Return the object.
+            return response
 
-            elif command == "":
-                continue
+        except openai.APIError as e:
+            logger.exception("Failed to communicate with LLM provider.")
+            raise ChatOpsAssistantError(
+                "Unable to connect to the LLM provider."
+            ) from e
 
-            else:
-                print("Unknown command. Type 'help'.")
+        except JSONDecodeError as e:
+            logger.exception("LLM returned invalid JSON.")
+            raise ChatOpsAssistantError(
+                "The AI returned invalid JSON."
+            ) from e
 
-    def show_help(self):
-        """
-        Display available commands.
-        """
-
-        print("\nAvailable Commands")
-        print("------------------")
-        print("help      Show available commands")
-        print("clear     Clear the screen")
-        print("exit      Exit ChatOps")
-        print()
-
-    def clear_screen(self):
-        """
-        Clear the terminal screen.
-        """
-
-        print("\033c", end="")
+        except ValidationError as e:
+            logger.exception("LLM response failed schema validation.")
+            raise ChatOpsAssistantError(
+                "The AI response did not match the expected schema."
+            ) from e
