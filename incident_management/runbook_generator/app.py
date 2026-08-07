@@ -1,7 +1,7 @@
 import sys
 
-from runbook_generator.src.services.runbook_generator import RunbookGenerator
-from runbook_generator.src.utils.file_utils import (
+from incident_management.runbook_generator.src.services.runbook_generator import RunbookGenerator
+from incident_management.runbook_generator.src.utils.file_utils import (
     read_text_file,
     write_text_file,
 )
@@ -21,7 +21,7 @@ def main():
         generator = RunbookGenerator()
         runbook = generator.generate(incident)
 
-        output_file = "runbook_generator/runbooks/payment-service-runbook.md"
+        output_file = "incident_management/runbook_generator/runbooks/payment-service-runbook.md"
 
         write_text_file(output_file, runbook)
 

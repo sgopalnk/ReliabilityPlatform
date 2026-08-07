@@ -5,7 +5,7 @@ Generates a production runbook from an incident description
 using the configured Large Language Model (LLM).
 """
 
-from runbook_generator.src.prompts.runbook_prompt import RUNBOOK_PROMPT
+from incident_management.runbook_generator.src.prompts.runbook_prompt import RUNBOOK_PROMPT
 from core.llm_client import LLMClient
 from core.logger import get_logger
 

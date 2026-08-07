@@ -8,8 +8,8 @@ and prints a structured incident report.
 
 import sys
 
-from incident_commander.src.services.incident_analyzer import IncidentAnalyzer
-from incident_commander.src.exceptions import IncidentAnalysisError
+from incident_management.incident_commander.src.services.incident_analyzer import IncidentAnalyzer
+from incident_management.incident_commander.src.exceptions import IncidentAnalysisError
 
 def main():
 

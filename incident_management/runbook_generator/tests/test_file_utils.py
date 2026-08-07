@@ -1,4 +1,4 @@
-from runbook_generator.src.utils.file_utils import read_text_file, write_text_file
+from incident_management.runbook_generator.src.utils.file_utils import read_text_file, write_text_file
 
 def test_write_and_read_text_file(tmp_path):
     """

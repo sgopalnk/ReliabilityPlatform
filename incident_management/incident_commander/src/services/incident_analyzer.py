@@ -9,9 +9,9 @@ import json
 import openai
 
 from core.llm_client import LLMClient
-from incident_commander.src.prompts.incident_prompt import build_incident_prompt
-from incident_commander.src.models.incident_analysis import IncidentAnalysis
-from incident_commander.src.exceptions import IncidentAnalysisError
+from incident_management.incident_commander.src.prompts.incident_prompt import build_incident_prompt
+from incident_management.incident_commander.src.models.incident_analysis import IncidentAnalysis
+from incident_management.incident_commander.src.exceptions import IncidentAnalysisError
 from json import JSONDecodeError
 from pydantic import ValidationError
 from core.logger import get_logger

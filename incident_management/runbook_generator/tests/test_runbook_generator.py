@@ -2,7 +2,7 @@
     The LLM is mocked so the tests do not make real API calls.
 """
 from unittest.mock import MagicMock
-from runbook_generator.src.services.runbook_generator import RunbookGenerator
+from incident_management.runbook_generator.src.services.runbook_generator import RunbookGenerator
 
 def test_generate_runbook():
     """

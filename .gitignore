@@ -21,6 +21,11 @@ __pycache__/
 outputs/
 reports/
 
+# Generated runbooks
+incident_management/runbook_generator/runbooks/*
+!incident_management/runbook_generator/runbooks/.gitkeep
+# This allows Git to keep the directory but ignore all generated runbooks.
+
 # VS Code
 .vscode/
 
