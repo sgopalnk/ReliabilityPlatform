@@ -1,7 +1,10 @@
 from operations_center.multi_agent_troubleshooter.src.agents.base_agent import (
     BaseAgent,
 )
-from operations_center.multi_agent_troubleshooter.src.models import AgentFinding
+from operations_center.multi_agent_troubleshooter.src.models import (
+    AgentFinding,
+    TroubleshootingResult,
+)
 
 
 class TroubleshootingCoordinator:
@@ -10,7 +13,7 @@ class TroubleshootingCoordinator:
     def __init__(self, agents: list[BaseAgent]) -> None:
         self._agents = agents
 
-    def investigate(self, incident: str) -> list[AgentFinding]:
+    def investigate(self, incident: str) -> TroubleshootingResult:
         """Run all configured agents against the same incident."""
 
         findings: list[AgentFinding] = []
@@ -19,4 +22,7 @@ class TroubleshootingCoordinator:
             finding = agent.investigate(incident)
             findings.append(finding)
 
-        return findings
+        return TroubleshootingResult(
+            incident=incident,
+            findings=findings,
+        )

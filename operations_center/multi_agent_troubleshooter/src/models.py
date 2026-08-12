@@ -14,3 +14,14 @@ class AgentFinding(BaseModel):
         le=1.0,
         description="Agent confidence in the finding, expressed from 0.0 to 1.0.",
     )
+
+class TroubleshootingResult(BaseModel):
+    """Structured result produced by the troubleshooting coordinator."""
+
+    incident: str = Field(
+        description="Original incident provided for investigation."
+    )
+    findings: list[AgentFinding] = Field(
+        default_factory=list,
+        description="Findings produced by the specialized troubleshooting agents.",
+    )

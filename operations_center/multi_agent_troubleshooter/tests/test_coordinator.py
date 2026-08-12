@@ -3,7 +3,10 @@ from unittest.mock import MagicMock
 from operations_center.multi_agent_troubleshooter.src.coordinator.coordinator import (
     TroubleshootingCoordinator,
 )
-from operations_center.multi_agent_troubleshooter.src.models import AgentFinding
+from operations_center.multi_agent_troubleshooter.src.models import (
+    AgentFinding,
+    TroubleshootingResult,
+)
 
 
 def test_coordinator_investigates_with_all_agents() -> None:
@@ -42,20 +45,30 @@ def test_coordinator_investigates_with_all_agents() -> None:
 
     incident = "Payment service is returning HTTP 500 errors."
 
-    findings = coordinator.investigate(incident)
+    result = coordinator.investigate(incident)
 
-    assert len(findings) == 3
-    assert findings[0].agent_name == "CPU Agent"
-    assert findings[1].agent_name == "Memory Agent"
-    assert findings[2].agent_name == "Network Agent"
+    assert isinstance(result, TroubleshootingResult)
+    assert result.incident == incident
+    assert len(result.findings) == 3
+
+    assert result.findings[0].agent_name == "CPU Agent"
+    assert result.findings[1].agent_name == "Memory Agent"
+    assert result.findings[2].agent_name == "Network Agent"
 
     cpu_agent.investigate.assert_called_once_with(incident)
     memory_agent.investigate.assert_called_once_with(incident)
     network_agent.investigate.assert_called_once_with(incident)
 
+
 def test_coordinator_with_no_agents_returns_empty_findings() -> None:
     """Verify that the coordinator handles an empty agent list."""
 
     coordinator = TroubleshootingCoordinator(agents=[])
-    findings = coordinator.investigate("Payment service is unavailable.")
-    assert findings == []
+
+    incident = "Payment service is unavailable."
+
+    result = coordinator.investigate(incident)
+
+    assert isinstance(result, TroubleshootingResult)
+    assert result.incident == incident
+    assert result.findings == []
