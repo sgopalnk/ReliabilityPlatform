@@ -19,8 +19,11 @@ class TroubleshootingCoordinator:
         findings: list[AgentFinding] = []
 
         for agent in self._agents:
-            finding = agent.investigate(incident)
-            findings.append(finding)
+            try:
+                finding = agent.investigate(incident)
+                findings.append(finding)
+            except Exception:
+                continue
 
         return TroubleshootingResult(
             incident=incident,

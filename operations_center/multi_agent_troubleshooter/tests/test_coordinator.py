@@ -72,3 +72,47 @@ def test_coordinator_with_no_agents_returns_empty_findings() -> None:
     assert isinstance(result, TroubleshootingResult)
     assert result.incident == incident
     assert result.findings == []
+
+def test_coordinator_continues_when_an_agent_fails() -> None:
+    """Verify that one failing agent does not stop other agents."""
+
+    cpu_agent = MagicMock()
+    cpu_agent.name = "CPU Agent"
+    cpu_agent.investigate.side_effect = RuntimeError("CPU agent failed")
+
+    memory_agent = MagicMock()
+    memory_agent.name = "Memory Agent"
+    memory_agent.investigate.return_value = AgentFinding(
+        agent_name="Memory Agent",
+        summary="High memory usage detected.",
+        evidence=["Memory usage reached 95%."],
+        confidence=0.90,
+    )
+
+    network_agent = MagicMock()
+    network_agent.name = "Network Agent"
+    network_agent.investigate.return_value = AgentFinding(
+        agent_name="Network Agent",
+        summary="Network latency increased.",
+        evidence=["Latency increased to 2 seconds."],
+        confidence=0.91,
+    )
+
+    coordinator = TroubleshootingCoordinator(
+        agents=[cpu_agent, memory_agent, network_agent]
+    )
+
+    incident = "Payment service is returning HTTP 500 errors."
+
+    result = coordinator.investigate(incident)
+
+    assert isinstance(result, TroubleshootingResult)
+    assert result.incident == incident
+    assert len(result.findings) == 2
+
+    assert result.findings[0].agent_name == "Memory Agent"
+    assert result.findings[1].agent_name == "Network Agent"
+
+    cpu_agent.investigate.assert_called_once_with(incident)
+    memory_agent.investigate.assert_called_once_with(incident)
+    network_agent.investigate.assert_called_once_with(incident)
