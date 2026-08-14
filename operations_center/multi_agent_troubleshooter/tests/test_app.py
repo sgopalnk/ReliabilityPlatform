@@ -21,6 +21,7 @@ def test_main_runs_troubleshooter_and_prints_result(capsys) -> None:
                 confidence=0.95,
             )
         ],
+        status="completed",
     )
 
     with patch(

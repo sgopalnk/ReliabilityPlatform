@@ -2,6 +2,7 @@ from operations_center.multi_agent_troubleshooter.src.agents.base_agent import (
     BaseAgent,
 )
 from operations_center.multi_agent_troubleshooter.src.models import (
+    AgentFailure,
     AgentFinding,
     TroubleshootingResult,
 )
@@ -17,15 +18,30 @@ class TroubleshootingCoordinator:
         """Run all configured agents against the same incident."""
 
         findings: list[AgentFinding] = []
+        failures: list[AgentFailure] = []
 
         for agent in self._agents:
             try:
                 finding = agent.investigate(incident)
                 findings.append(finding)
-            except Exception:
-                continue
+            except Exception as exc:
+                failures.append(
+                    AgentFailure(
+                        agent_name=agent.name,
+                        error=str(exc),
+                    )
+                )
+
+        if findings and not failures:
+            status = "completed"
+        elif findings and failures:
+            status = "partial"
+        else:
+            status = "failed"
 
         return TroubleshootingResult(
             incident=incident,
             findings=findings,
+            failures=failures,
+            status=status,
         )

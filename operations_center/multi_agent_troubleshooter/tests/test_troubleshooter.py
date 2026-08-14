@@ -25,6 +25,7 @@ def test_troubleshooter_investigate() -> None:
                 confidence=0.95,
             )
         ],
+        status="completed",
     )
 
     with patch(
@@ -67,6 +68,7 @@ def test_troubleshooter_uses_injected_agents() -> None:
     expected_result = TroubleshootingResult(
         incident="Payment service is unavailable.",
         findings=[],
+        status="failed",
     )
 
     coordinator = MagicMock()

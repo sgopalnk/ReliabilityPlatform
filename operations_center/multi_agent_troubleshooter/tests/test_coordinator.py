@@ -116,3 +116,22 @@ def test_coordinator_continues_when_an_agent_fails() -> None:
     cpu_agent.investigate.assert_called_once_with(incident)
     memory_agent.investigate.assert_called_once_with(incident)
     network_agent.investigate.assert_called_once_with(incident)
+
+def test_coordinator_records_agent_failure() -> None:
+    """Verify that a failed agent is recorded in the result."""
+
+    failing_agent = MagicMock()
+    failing_agent.name = "CPU Agent"
+    failing_agent.investigate.side_effect = RuntimeError("CPU agent failed")
+
+    coordinator = TroubleshootingCoordinator(
+        agents=[failing_agent]
+    )
+
+    result = coordinator.investigate(
+        "Payment service is returning HTTP 500 errors."
+    )
+
+    assert len(result.failures) == 1
+    assert result.failures[0].agent_name == "CPU Agent"
+    assert result.failures[0].error == "CPU agent failed"
