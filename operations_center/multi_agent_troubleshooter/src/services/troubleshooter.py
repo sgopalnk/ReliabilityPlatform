@@ -10,9 +10,6 @@ from operations_center.multi_agent_troubleshooter.src.coordinator.coordinator im
 from operations_center.multi_agent_troubleshooter.src.models import (
     TroubleshootingResult,
 )
-from operations_center.multi_agent_troubleshooter.src.agents.base_agent import (
-    BaseAgent,
-)
 
 class MultiAgentTroubleshooter:
     """Entry point for multi-agent production troubleshooting."""
