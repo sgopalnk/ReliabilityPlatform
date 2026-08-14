@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, patch
 
 from operations_center.multi_agent_troubleshooter.src.models import (
     AgentFinding,
+    TroubleshootingAnalysis,
     TroubleshootingResult,
 )
 from operations_center.multi_agent_troubleshooter.src.services.troubleshooter import (
@@ -42,8 +43,8 @@ def test_troubleshooter_investigate() -> None:
             "Payment service is unavailable."
         )
 
-    assert isinstance(result, TroubleshootingResult)
-    assert result == expected_result
+    assert isinstance(result, TroubleshootingAnalysis)
+    assert result.investigation == expected_result
 
     coordinator.investigate.assert_called_once_with(
         "Payment service is unavailable."

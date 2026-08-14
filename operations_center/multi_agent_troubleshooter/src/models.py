@@ -51,3 +51,41 @@ class TroubleshootingResult(BaseModel):
     status: Literal["completed", "partial", "failed"] = Field(
         description="Overall status of the troubleshooting investigation."
     )
+
+
+class SynthesisResult(BaseModel):
+    """Structured cross-agent synthesis of a troubleshooting investigation."""
+
+    summary: str = Field(
+        description="Overall summary of the investigation findings."
+    )
+    key_findings: list[str] = Field(
+        default_factory=list,
+        description="Most important findings across the specialized agents.",
+    )
+    correlations: list[str] = Field(
+        default_factory=list,
+        description="Relationships or patterns identified across agent findings.",
+    )
+    conflicts: list[str] = Field(
+        default_factory=list,
+        description="Conflicting or contradictory findings across agents.",
+    )
+    root_cause_hypothesis: str = Field(
+        description="Evidence-based hypothesis about the likely root cause."
+    )
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Confidence in the overall synthesis, expressed from 0.0 to 1.0.",
+    )
+
+class TroubleshootingAnalysis(BaseModel):
+    """Complete multi-agent troubleshooting analysis."""
+
+    investigation: TroubleshootingResult = Field(
+        description="Raw investigation results produced by the troubleshooting coordinator."
+    )
+    synthesis: SynthesisResult = Field(
+        description="Cross-agent synthesis of the investigation findings."
+    )

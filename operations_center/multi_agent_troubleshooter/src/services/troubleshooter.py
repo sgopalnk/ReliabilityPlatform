@@ -8,13 +8,21 @@ from operations_center.multi_agent_troubleshooter.src.coordinator.coordinator im
     TroubleshootingCoordinator,
 )
 from operations_center.multi_agent_troubleshooter.src.models import (
-    TroubleshootingResult,
+    TroubleshootingAnalysis,
 )
+from operations_center.multi_agent_troubleshooter.src.services.finding_synthesizer import (
+    FindingSynthesizer,
+)
+
 
 class MultiAgentTroubleshooter:
     """Entry point for multi-agent production troubleshooting."""
 
-    def __init__(self, agents: list[BaseAgent] | None = None) -> None:
+    def __init__(
+        self,
+        agents: list[BaseAgent] | None = None,
+        synthesizer: FindingSynthesizer | None = None,
+    ) -> None:
         self._coordinator = TroubleshootingCoordinator(
             agents=agents
             if agents is not None
@@ -24,8 +32,15 @@ class MultiAgentTroubleshooter:
                 NetworkAgent(),
             ]
         )
+        self._synthesizer = synthesizer or FindingSynthesizer()
 
-    def investigate(self, incident: str) -> TroubleshootingResult:
-        """Investigate an incident using all configured troubleshooting agents."""
+    def investigate(self, incident: str) -> TroubleshootingAnalysis:
+        """Investigate an incident and synthesize the agent findings."""
 
-        return self._coordinator.investigate(incident)
+        investigation = self._coordinator.investigate(incident)
+        synthesis = self._synthesizer.synthesize(investigation)
+
+        return TroubleshootingAnalysis(
+            investigation=investigation,
+            synthesis=synthesis,
+        )
