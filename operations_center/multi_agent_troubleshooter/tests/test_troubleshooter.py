@@ -7,6 +7,9 @@ from operations_center.multi_agent_troubleshooter.src.models import (
 from operations_center.multi_agent_troubleshooter.src.services.troubleshooter import (
     MultiAgentTroubleshooter,
 )
+from operations_center.multi_agent_troubleshooter.src.agents.cpu_agent import CPUAgent
+from operations_center.multi_agent_troubleshooter.src.agents.memory_agent import MemoryAgent
+from operations_center.multi_agent_troubleshooter.src.agents.network_agent import NetworkAgent
 
 
 def test_troubleshooter_investigate() -> None:
@@ -82,3 +85,22 @@ def test_troubleshooter_uses_injected_agents() -> None:
     coordinator_class.assert_called_once_with(
         agents=[cpu_agent, memory_agent]
     )
+
+def test_troubleshooter_creates_default_agents() -> None:
+    """Verify that the service creates the default troubleshooting agents."""
+
+    with patch(
+        "operations_center.multi_agent_troubleshooter.src.services.troubleshooter."
+        "TroubleshootingCoordinator"
+    ) as coordinator_class:
+        coordinator = MagicMock()
+        coordinator_class.return_value = coordinator
+
+        MultiAgentTroubleshooter()
+
+    agents = coordinator_class.call_args.kwargs["agents"]
+
+    assert len(agents) == 3
+    assert isinstance(agents[0], CPUAgent)
+    assert isinstance(agents[1], MemoryAgent)
+    assert isinstance(agents[2], NetworkAgent)
