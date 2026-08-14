@@ -44,3 +44,41 @@ def test_troubleshooter_investigate() -> None:
     coordinator.investigate.assert_called_once_with(
         "Payment service is unavailable."
     )
+
+def test_troubleshooter_accepts_custom_agents() -> None:
+    """Verify that the service accepts a custom agent list."""
+    custom_agent = MagicMock()
+
+    troubleshooter = MultiAgentTroubleshooter(
+        agents=[custom_agent]
+    )
+
+    assert troubleshooter._coordinator._agents == [custom_agent]
+
+def test_troubleshooter_uses_injected_agents() -> None:
+    """Verify that the service uses explicitly provided agents."""
+
+    cpu_agent = MagicMock()
+    memory_agent = MagicMock()
+
+    expected_result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+    )
+
+    coordinator = MagicMock()
+    coordinator.investigate.return_value = expected_result
+
+    with patch(
+        "operations_center.multi_agent_troubleshooter.src.services.troubleshooter."
+        "TroubleshootingCoordinator"
+    ) as coordinator_class:
+        coordinator_class.return_value = coordinator
+
+        troubleshooter = MultiAgentTroubleshooter(
+            agents=[cpu_agent, memory_agent]
+        )
+
+    coordinator_class.assert_called_once_with(
+        agents=[cpu_agent, memory_agent]
+    )
