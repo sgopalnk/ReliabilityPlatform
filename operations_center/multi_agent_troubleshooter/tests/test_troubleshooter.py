@@ -129,3 +129,23 @@ def test_troubleshooter_rejects_whitespace_only_incident() -> None:
         assert False, "Expected ValueError"
     except ValueError as exc:
         assert str(exc) == "Incident description cannot be empty."
+
+
+def test_troubleshooter_propagates_synthesis_failure() -> None:
+    """Verify that a synthesis failure is propagated to the caller."""
+
+    synthesizer = MagicMock()
+    synthesizer.synthesize.side_effect = RuntimeError("Synthesis failed")
+
+    troubleshooter = MultiAgentTroubleshooter(
+        agents=[],
+        synthesizer=synthesizer,
+    )
+
+    try:
+        troubleshooter.investigate("Payment service is unavailable.")
+        assert False, "Expected RuntimeError"
+    except RuntimeError as exc:
+        assert str(exc) == "Synthesis failed"
+
+    synthesizer.synthesize.assert_called_once()
