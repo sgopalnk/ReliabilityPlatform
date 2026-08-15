@@ -1,4 +1,7 @@
+import logging
+
 from core.llm_client import LLMClient
+from core.logger import get_logger
 
 from operations_center.multi_agent_troubleshooter.src.models import (
     SynthesisResult,
@@ -6,6 +9,10 @@ from operations_center.multi_agent_troubleshooter.src.models import (
 )
 from operations_center.multi_agent_troubleshooter.src.prompts.synthesis_prompt import (
     SYNTHESIS_SYSTEM_PROMPT,
+)
+
+logger: logging.Logger = get_logger(
+    "multi_agent_troubleshooter.synthesizer"
 )
 
 
@@ -20,6 +27,13 @@ class FindingSynthesizer:
         troubleshooting_result: TroubleshootingResult,
     ) -> SynthesisResult:
         """Produce an evidence-based synthesis of agent findings."""
+
+        logger.info(
+            "Starting finding synthesis. Status=%s, findings=%d, failures=%d.",
+            troubleshooting_result.status,
+            len(troubleshooting_result.findings),
+            len(troubleshooting_result.failures),
+        )
 
         prompt = f"""
 {SYNTHESIS_SYSTEM_PROMPT}
@@ -54,4 +68,11 @@ Return only valid JSON. Do not include markdown or additional text.
 
         response = self._llm_client.generate(prompt)
 
-        return SynthesisResult.model_validate_json(response)
+        result = SynthesisResult.model_validate_json(response)
+
+        logger.info(
+            "Finding synthesis completed successfully. Confidence=%.2f.",
+            result.confidence,
+        )
+
+        return result

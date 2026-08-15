@@ -135,3 +135,51 @@ def test_coordinator_records_agent_failure() -> None:
     assert len(result.failures) == 1
     assert result.failures[0].agent_name == "CPU Agent"
     assert result.failures[0].error == "CPU agent failed"
+
+def test_coordinator_logs_agent_failure(caplog) -> None:
+    """Verify that an agent failure is written to the log."""
+
+    failing_agent = MagicMock()
+    failing_agent.name = "CPU Agent"
+    failing_agent.investigate.side_effect = RuntimeError("CPU agent failed")
+
+    coordinator = TroubleshootingCoordinator(
+        agents=[failing_agent]
+    )
+
+    with caplog.at_level("ERROR"):
+        coordinator.investigate(
+            "Payment service is returning HTTP 500 errors."
+        )
+
+    assert "CPU Agent failed during investigation." in caplog.text
+    assert "RuntimeError: CPU agent failed" in caplog.text
+
+
+def test_coordinator_logs_successful_investigation(caplog) -> None:
+    """Verify that successful investigation lifecycle events are logged."""
+
+    cpu_agent = MagicMock()
+    cpu_agent.name = "CPU Agent"
+    cpu_agent.investigate.return_value = AgentFinding(
+        agent_name="CPU Agent",
+        summary="High CPU detected.",
+        evidence=["CPU usage reached 95%."],
+        confidence=0.95,
+    )
+
+    coordinator = TroubleshootingCoordinator(
+        agents=[cpu_agent]
+    )
+
+    with caplog.at_level("INFO"):
+        result = coordinator.investigate(
+            "Payment service is returning HTTP 500 errors."
+        )
+
+    assert result.status == "completed"
+
+    assert "Starting investigation with 1 agents." in caplog.text
+    assert "Starting investigation with CPU Agent." in caplog.text
+    assert "CPU Agent completed successfully." in caplog.text
+    assert "Investigation completed with status=completed." in caplog.text
