@@ -107,3 +107,25 @@ def test_troubleshooter_creates_default_agents() -> None:
     assert isinstance(agents[0], CPUAgent)
     assert isinstance(agents[1], MemoryAgent)
     assert isinstance(agents[2], NetworkAgent)
+
+
+def test_troubleshooter_rejects_empty_incident() -> None:
+    """Verify that an empty incident is rejected."""
+    troubleshooter = MultiAgentTroubleshooter()
+
+    try:
+        troubleshooter.investigate("")
+        assert False, "Expected ValueError"
+    except ValueError as exc:
+        assert str(exc) == "Incident description cannot be empty."
+
+
+def test_troubleshooter_rejects_whitespace_only_incident() -> None:
+    """Verify that a whitespace-only incident is rejected."""
+    troubleshooter = MultiAgentTroubleshooter()
+
+    try:
+        troubleshooter.investigate("   ")
+        assert False, "Expected ValueError"
+    except ValueError as exc:
+        assert str(exc) == "Incident description cannot be empty."

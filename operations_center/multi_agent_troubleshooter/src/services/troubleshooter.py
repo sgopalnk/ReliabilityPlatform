@@ -37,6 +37,9 @@ class MultiAgentTroubleshooter:
     def investigate(self, incident: str) -> TroubleshootingAnalysis:
         """Investigate an incident and synthesize the agent findings."""
 
+        if not incident.strip():
+            raise ValueError("Incident description cannot be empty.")
+
         investigation = self._coordinator.investigate(incident)
         synthesis = self._synthesizer.synthesize(investigation)
 
