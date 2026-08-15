@@ -1,0 +1,35 @@
+Incident: Payment Service Elevated 500 Errors
+
+Date: 2026-08-15
+
+10:02 UTC - Monitoring detected an increase in HTTP 500 responses from the payment-service.
+
+10:04 UTC - On-call engineer acknowledged the alert.
+
+10:07 UTC - Application logs showed repeated database connection timeout errors.
+
+10:10 UTC - Database monitoring showed the application connection pool operating near its configured maximum.
+
+10:14 UTC - Traffic to the payment-service was temporarily reduced.
+
+10:17 UTC - Error rates began to decline.
+
+10:22 UTC - Payment success rates returned to normal.
+
+Customer impact:
+Some customers were unable to complete payment transactions between approximately 10:02 UTC and 10:22 UTC.
+
+Observed evidence:
+- HTTP 500 error rate increased sharply.
+- Database connection timeout errors were present in application logs.
+- Connection pool utilization was near its configured maximum.
+- Error rates decreased after traffic was reduced.
+
+Investigation notes:
+The available evidence suggests database connection pool exhaustion may have contributed to the failures. The investigation has not yet conclusively established this as the confirmed root cause.
+
+Response observations:
+- Monitoring detected the incident quickly.
+- The on-call engineer acknowledged the alert within two minutes.
+- Engineers had to manually correlate application logs and database metrics.
+- No dedicated alert existed for connection pool saturation.
