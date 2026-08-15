@@ -111,3 +111,147 @@ def test_synthesizer_includes_agent_failures_in_input() -> None:
     assert "Network Agent" in prompt
     assert "Network investigation failed." in prompt
     assert "partial" in prompt
+
+
+def test_synthesizer_raises_on_invalid_json() -> None:
+    """Verify that malformed LLM output is rejected."""
+
+    llm_client = MagicMock()
+    llm_client.generate.return_value = "not valid json"
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected validation error"
+    except ValueError:
+        pass
+
+
+def test_synthesizer_raises_on_invalid_confidence() -> None:
+    """Verify that invalid synthesis confidence is rejected."""
+
+    llm_client = MagicMock()
+    llm_client.generate.return_value = """
+    {
+        "summary": "CPU pressure detected.",
+        "key_findings": [],
+        "correlations": [],
+        "conflicts": [],
+        "root_cause_hypothesis": "CPU pressure may be involved.",
+        "confidence": 1.5
+    }
+    """
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected validation error"
+    except ValueError:
+        pass
+
+
+def test_synthesizer_propagates_llm_failure() -> None:
+    """Verify that an LLM client failure is propagated."""
+
+    llm_client = MagicMock()
+    llm_client.generate.side_effect = RuntimeError("LLM unavailable")
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected RuntimeError"
+    except RuntimeError as exc:
+        assert str(exc) == "LLM unavailable"
+
+
+def test_synthesizer_raises_on_invalid_json() -> None:
+    """Verify that malformed LLM output is rejected."""
+
+    llm_client = MagicMock()
+    llm_client.generate.return_value = "not valid json"
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected validation error"
+    except ValueError:
+        pass
+
+
+def test_synthesizer_raises_on_invalid_confidence() -> None:
+    """Verify that invalid synthesis confidence is rejected."""
+
+    llm_client = MagicMock()
+    llm_client.generate.return_value = """
+    {
+        "summary": "CPU pressure detected.",
+        "key_findings": [],
+        "correlations": [],
+        "conflicts": [],
+        "root_cause_hypothesis": "CPU pressure may be involved.",
+        "confidence": 1.5
+    }
+    """
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected validation error"
+    except ValueError:
+        pass
+
+
+def test_synthesizer_propagates_llm_failure() -> None:
+    """Verify that an LLM client failure is propagated."""
+
+    llm_client = MagicMock()
+    llm_client.generate.side_effect = RuntimeError("LLM unavailable")
+
+    synthesizer = FindingSynthesizer(llm_client=llm_client)
+
+    result = TroubleshootingResult(
+        incident="Payment service is unavailable.",
+        findings=[],
+        status="failed",
+    )
+
+    try:
+        synthesizer.synthesize(result)
+        assert False, "Expected RuntimeError"
+    except RuntimeError as exc:
+        assert str(exc) == "LLM unavailable"
