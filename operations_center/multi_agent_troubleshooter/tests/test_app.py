@@ -61,3 +61,16 @@ def test_main_without_incident_prints_usage(capsys) -> None:
     output = capsys.readouterr().out
 
     assert "Usage:" in output
+
+def test_main_with_whitespace_incident_prints_usage(capsys) -> None:
+    """Verify that app.py shows usage for whitespace-only input."""
+
+    with patch(
+        "sys.argv",
+        ["app.py", "   "],
+    ):
+        app.main()
+
+    output = capsys.readouterr().out
+
+    assert "Usage:" in output
